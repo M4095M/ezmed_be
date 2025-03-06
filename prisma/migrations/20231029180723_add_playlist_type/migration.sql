@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `playlist` ADD COLUMN `type` ENUM('COSTUM', 'REVISION', 'EXAM') NOT NULL DEFAULT 'COSTUM';
