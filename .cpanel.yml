@@ -1,4 +1,4 @@
 deployment:
   tasks:
-    - export DEPLOY_PATH=/home/ezmedc02/public_html
+    - export DEPLOY_PATH=/home/ezmedc02/repositories/ezmed_be
     - /bin/cp -r * $DEPLOY_PATH
