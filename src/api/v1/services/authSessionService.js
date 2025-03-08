@@ -1,19 +1,11 @@
 const prisma = require("../../../config/dbConfig.js");
 
-function normalizeIP(ip) {
-  if (ip.startsWith("::ffff:")) {
-    return ip.replace("::ffff:", "");
-  }
-  return ip;
-}
-
 const getSession = async (token, ip) => {
   try {
-    const normalizedIp = normalizeIP(ip);
     const session = await prisma.authSession.findFirst({
       where: {
         token,
-        ip: normalizedIp,
+        ip: ip,
       },
     });
     return session;
@@ -36,7 +28,6 @@ const findSessionByUser = async (userId) => {
 
 const createSession = async (userId, token, ip) => {
   try {
-    const normalizedIp = normalizeIP(ip);
     const session = await prisma.authSession.create({
       data: {
         token,
@@ -45,7 +36,7 @@ const createSession = async (userId, token, ip) => {
             id: userId,
           },
         },
-        ip: normalizedIp,
+        ip: ip,
       },
     });
     return session;

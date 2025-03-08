@@ -30,16 +30,6 @@ const { getUserPermissions } = require("../services/payService.js");
 // Helper Functions
 // ----------------------
 
-// Safely get client's IP address
-
-function normalizeIP(ip) {
-  // If the IP is an IPv6-mapped IPv4 address, convert it to IPv4
-  if (ip.startsWith("::ffff:")) {
-    return ip.replace("::ffff:", "");
-  }
-  return ip;
-}
-
 const getIpAddress = (req) => {
   const forwardedFor = req.header("x-forwarded-for");
   return forwardedFor && typeof forwardedFor === "string"
@@ -77,7 +67,7 @@ const register = async (req, res, next) => {
       }
     );
     const ip = getIpAddress(req);
-    await createSession(user.id, token, normalizeIP(ip));
+    await createSession(user.id, token, ip);
     user.password = undefined;
     return res
       .status(201)
@@ -118,8 +108,8 @@ const login = async (req, res, next) => {
     const userSession = await findSessionByUser(user.id);
     if (userSession) await deleteSession(user.id);
     const ip = getIpAddress(req);
-    console.log("Using IP address:", normalizeIP(ip));
-    await createSession(user.id, token, normalizeIP(ip));
+    console.log("Using IP address:", ip);
+    await createSession(user.id, token, ip);
     user.password = undefined;
 
     // Optionally, add permissions if needed (as in your previous working code)
@@ -154,8 +144,6 @@ const refreshTokenHandler = async (req, res, next) => {
   try {
     const { refreshToken } = req.body;
     if (!refreshToken) throw new Error("Refresh token is required");
-    console.log("Refresh token:", refreshToken);
-
     // Verify the refresh token using the refresh secret
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
     const user = await findUserById(decoded.id);
